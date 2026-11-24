@@ -34,7 +34,7 @@ Each folder is self-contained: copy one into your own project and it runs.
 | `homestead-savings` | What the school homestead exemption saves at a Texas address, with the 65+ amount | [homestead-savings](homestead-savings/) | [texastaxapi.com/demos/homestead-savings](https://texastaxapi.com/demos/homestead-savings) |
 | `tax-proration` | The year's property tax at a Texas address split between seller and buyer at closing, and who credits whom | [tax-proration](tax-proration/) | [texastaxapi.com/demos/tax-proration](https://texastaxapi.com/demos/tax-proration) |
 | `mortgage-escrow` | The monthly mortgage payment on a Texas address with its own property tax in escrow, insurance and HOA | [mortgage-escrow](mortgage-escrow/) | [texastaxapi.com/demos/mortgage-escrow](https://texastaxapi.com/demos/mortgage-escrow) |
-| `dscr` | coming | — | — |
+| `dscr` | The debt service coverage ratio of a Texas rental, rent over the full payment with the address's own tax | [dscr](dscr/) | [texastaxapi.com/demos/dscr](https://texastaxapi.com/demos/dscr) |
 
 Each row will link its folder, `https://github.com/InternetComputerOG/texastaxapi-demos/tree/main/<slug>`, and its
 live page, `https://texastaxapi.com/demos/<slug>`.

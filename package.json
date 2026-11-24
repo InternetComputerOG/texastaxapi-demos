@@ -11,6 +11,7 @@
     "special-district-check": "node --env-file=.env special-district-check/server.js",
     "homestead-savings": "node --env-file=.env homestead-savings/server.js",
     "tax-proration": "node --env-file=.env tax-proration/server.js",
-    "mortgage-escrow": "node --env-file=.env mortgage-escrow/server.js"
+    "mortgage-escrow": "node --env-file=.env mortgage-escrow/server.js",
+    "dscr": "node --env-file=.env dscr/server.js"
   }
 }
