@@ -1,0 +1,10 @@
+{
+  "name": "texastaxapi-demos",
+  "private": true,
+  "description": "Small, runnable examples of using the Texas Tax API.",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test"
+  }
+}
