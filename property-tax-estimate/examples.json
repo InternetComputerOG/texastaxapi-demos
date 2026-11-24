@@ -1,0 +1,289 @@
+{
+  "slug": "property-tax-estimate",
+  "formula": "tax per unit = round_half_up(value * adopted_rate / 100, cents); total = sum of unit taxes; a unit with no adopted rate is listed in left_out and not summed",
+  "rates_source": "local wrangler dev site-lane answers, 2026-11-24, tax_year 2026 (work/research/demos/discovery.md, AS3)",
+  "examples": [
+    {
+      "name": "Fort Bend, Cinco MUD 12 and ESD 2, $400,000",
+      "input": {
+        "value": 400000,
+        "units": [
+          {
+            "name": "FORT BEND CO DRNG",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.010000"
+          },
+          {
+            "name": "FORT BEND CO GEN FUND",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.407000"
+          },
+          {
+            "name": "CINCO MUD 12",
+            "type": "mud",
+            "levy": "tax",
+            "adopted": "0.195000"
+          },
+          {
+            "name": "FORT BEND ESD 2",
+            "type": "esd",
+            "levy": "tax",
+            "adopted": "0.096778"
+          },
+          {
+            "name": "KATY ISD",
+            "type": "school",
+            "levy": "tax",
+            "adopted": "1.117100"
+          },
+          {
+            "name": "WILLOW-FORK DRNG",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.145000"
+          }
+        ]
+      },
+      "expected": {
+        "units": [
+          {
+            "name": "FORT BEND CO DRNG",
+            "type": "drainage",
+            "rate": "0.010000",
+            "tax": "40.00"
+          },
+          {
+            "name": "FORT BEND CO GEN FUND",
+            "type": "other",
+            "rate": "0.407000",
+            "tax": "1628.00"
+          },
+          {
+            "name": "CINCO MUD 12",
+            "type": "mud",
+            "rate": "0.195000",
+            "tax": "780.00"
+          },
+          {
+            "name": "FORT BEND ESD 2",
+            "type": "esd",
+            "rate": "0.096778",
+            "tax": "387.11"
+          },
+          {
+            "name": "KATY ISD",
+            "type": "school",
+            "rate": "1.117100",
+            "tax": "4468.40"
+          },
+          {
+            "name": "WILLOW-FORK DRNG",
+            "type": "drainage",
+            "rate": "0.145000",
+            "tax": "580.00"
+          }
+        ],
+        "total": "7883.51",
+        "left_out": []
+      }
+    },
+    {
+      "name": "Brazoria, Pearland, $285,500 (appraisal district carries no rate)",
+      "input": {
+        "value": 285500,
+        "units": [
+          {
+            "name": "ALVIN COLLEGE",
+            "type": "college",
+            "levy": "tax",
+            "adopted": "0.156543"
+          },
+          {
+            "name": "ALVIN INDEPENDENT SCHOOL DISTRICT",
+            "type": "school",
+            "levy": "tax",
+            "adopted": "1.124900"
+          },
+          {
+            "name": "BRAZORIA CENTRAL APPRAISAL DISTRICT",
+            "type": "other",
+            "levy": "tax",
+            "adopted": null
+          },
+          {
+            "name": "BRAZORIA COUNTY",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.262690"
+          },
+          {
+            "name": "BRAZORIA COUNTY DRAINAGE DISTRICT #4 (PEARLAND)",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.111267"
+          },
+          {
+            "name": "CITY OF PEARLAND",
+            "type": "city",
+            "levy": "tax",
+            "adopted": "0.627892"
+          },
+          {
+            "name": "PEARLAND MUNICIPAL MANAGEMENT DIST #2",
+            "type": "mmd",
+            "levy": "tax",
+            "adopted": "0.076150"
+          },
+          {
+            "name": "ROAD & BRIDGE FUND",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.042068"
+          }
+        ]
+      },
+      "expected": {
+        "units": [
+          {
+            "name": "ALVIN COLLEGE",
+            "type": "college",
+            "rate": "0.156543",
+            "tax": "446.93"
+          },
+          {
+            "name": "ALVIN INDEPENDENT SCHOOL DISTRICT",
+            "type": "school",
+            "rate": "1.124900",
+            "tax": "3211.59"
+          },
+          {
+            "name": "BRAZORIA CENTRAL APPRAISAL DISTRICT",
+            "type": "other",
+            "rate": null,
+            "tax": null
+          },
+          {
+            "name": "BRAZORIA COUNTY",
+            "type": "other",
+            "rate": "0.262690",
+            "tax": "749.98"
+          },
+          {
+            "name": "BRAZORIA COUNTY DRAINAGE DISTRICT #4 (PEARLAND)",
+            "type": "drainage",
+            "rate": "0.111267",
+            "tax": "317.67"
+          },
+          {
+            "name": "CITY OF PEARLAND",
+            "type": "city",
+            "rate": "0.627892",
+            "tax": "1792.63"
+          },
+          {
+            "name": "PEARLAND MUNICIPAL MANAGEMENT DIST #2",
+            "type": "mmd",
+            "rate": "0.076150",
+            "tax": "217.41"
+          },
+          {
+            "name": "ROAD & BRIDGE FUND",
+            "type": "other",
+            "rate": "0.042068",
+            "tax": "120.10"
+          }
+        ],
+        "total": "6856.31",
+        "left_out": ["BRAZORIA CENTRAL APPRAISAL DISTRICT"]
+      }
+    },
+    {
+      "name": "Travis, Manor, $350,000 (Manor ISD has no adopted rate yet)",
+      "input": {
+        "value": 350000,
+        "units": [
+          {
+            "name": "TRAVIS COUNTY",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.386210"
+          },
+          {
+            "name": "COTTONWD CREEK MUD NO 1",
+            "type": "mud",
+            "levy": "tax",
+            "adopted": "0.806500"
+          },
+          {
+            "name": "TRAVIS COUNTY HEALTHCARE DISTR",
+            "type": "hospital",
+            "levy": "tax",
+            "adopted": "0.132863"
+          },
+          {
+            "name": "MANOR ISD",
+            "type": "school",
+            "levy": "tax",
+            "adopted": null
+          },
+          {
+            "name": "AUSTIN COMM COLL DIST",
+            "type": "college",
+            "levy": "tax",
+            "adopted": "0.103643"
+          },
+          {
+            "name": "TRAVIS CO ESD NO 12",
+            "type": "esd",
+            "levy": "tax",
+            "adopted": "0.100000"
+          }
+        ]
+      },
+      "expected": {
+        "units": [
+          {
+            "name": "TRAVIS COUNTY",
+            "type": "other",
+            "rate": "0.386210",
+            "tax": "1351.74"
+          },
+          {
+            "name": "COTTONWD CREEK MUD NO 1",
+            "type": "mud",
+            "rate": "0.806500",
+            "tax": "2822.75"
+          },
+          {
+            "name": "TRAVIS COUNTY HEALTHCARE DISTR",
+            "type": "hospital",
+            "rate": "0.132863",
+            "tax": "465.02"
+          },
+          {
+            "name": "MANOR ISD",
+            "type": "school",
+            "rate": null,
+            "tax": null
+          },
+          {
+            "name": "AUSTIN COMM COLL DIST",
+            "type": "college",
+            "rate": "0.103643",
+            "tax": "362.75"
+          },
+          {
+            "name": "TRAVIS CO ESD NO 12",
+            "type": "esd",
+            "rate": "0.100000",
+            "tax": "350.00"
+          }
+        ],
+        "total": "5352.26",
+        "left_out": ["MANOR ISD"]
+      }
+    }
+  ]
+}
