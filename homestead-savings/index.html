@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Texas homestead exemption savings by address</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 56rem; margin: 2rem auto; padding: 0 1rem; }
+    input { font: inherit; padding: 0.4rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { text-align: left; padding: 0.4rem; border-bottom: 1px solid #ccc; }
+    .note { color: #555; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Texas homestead exemption savings by address</h1>
+
+  <!-- 1. The address: one lookup through our own server, which holds the key. -->
+  <form id="ask">
+    <label for="address">Texas street address</label><br />
+    <input id="address" size="40" required />
+    <button>Look up</button>
+  </form>
+  <p id="status" role="status"></p>
+
+  <!-- 2. The value, the 65+ box and any missing school rate: recomputed in the browser, with no second lookup. -->
+  <section id="result" hidden>
+    <p><strong id="where"></strong></p>
+    <label for="value">Value ($)</label>
+    <input id="value" inputmode="decimal" placeholder="Enter the value" />
+    <p class="note" id="value-note"></p>
+    <label><input type="checkbox" id="over65" /> The owner is 65 or older, or disabled</label>
+    <div id="rates"></div>
+    <p id="message"></p>
+    <table id="table">
+      <thead><tr><th>School district</th><th>Rate per $100</th><th>Exemption</th><th>Savings</th></tr></thead>
+      <tbody id="rows"></tbody>
+      <tfoot><tr><th colspan="3">Savings a year</th><th id="total"></th></tr></tfoot>
+    </table>
+    <p class="note">
+      Not computed: a local-option exemption (Tax Code § 11.13(n)) and a MUD's own homestead exemption. The amounts are
+      for 2026 ($140,000; $60,000 more if 65+ or disabled), as read in the Comptroller's publication 96-1425.
+    </p>
+    <p class="note" id="request-id"></p>
+  </section>
+
+  <script type="module">
+    import { savings } from "./calc.js";
+
+    const $ = (id) => document.getElementById(id);
+    const money = (s) => "$" + Number(s).toLocaleString("en-US", { minimumFractionDigits: 2 });
+    let body = null; // the last API answer; every recompute reads it
+
+    $("ask").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("status").textContent = "Looking up…";
+      const res = await fetch("/lookup?address=" + encodeURIComponent($("address").value));
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.units) {
+        // An error answer carries { error: { code, message } }; an ambiguous address lists candidates.
+        $("status").textContent = json.error?.message ?? `The lookup was not answered (${res.status}).`;
+        $("result").hidden = true;
+        return;
+      }
+      body = json;
+      $("status").textContent = "";
+      $("where").textContent = `${json.address?.normalized ?? json.address?.input ?? ""}, ${json.county?.name} County`;
+      // parcel.value is the appraisal district's value (kind "market" or "assessed"), not a sale price: editable.
+      const v = json.parcel?.value;
+      $("value").value = v?.amount ?? "";
+      $("value-note").textContent = v
+        ? `Prefilled with the appraisal district's ${v.kind} value for ${v.tax_year}. Change it to your price.`
+        : "The county gives no value for this parcel. Enter the value.";
+      // A school district with no adopted rate yet: ask for its rate rather than guess one.
+      $("rates").replaceChildren(
+        ...json.units
+          .filter((u) => u.type === "school" && !u.rates?.adopted)
+          .map((u) => {
+            const label = document.createElement("label");
+            label.textContent = `${u.name} has no adopted rate yet: enter the school district's rate per $100 `;
+            const input = document.createElement("input");
+            input.inputMode = "decimal";
+            input.dataset.unit = u.name;
+            input.addEventListener("input", render);
+            label.append(input);
+            return label;
+          }),
+      );
+      $("request-id").textContent = `Request id: ${res.headers.get("x-request-id") ?? "none"}`;
+      $("result").hidden = false;
+      render();
+    });
+
+    $("value").addEventListener("input", render);
+    $("over65").addEventListener("change", render);
+
+    function render() {
+      const entered = Object.fromEntries(
+        [...$("rates").querySelectorAll("input")].map((i) => [i.dataset.unit, i.value.trim()]),
+      );
+      const r = savings(
+        $("value").value.replace(/[$,\s]/g, ""),
+        $("over65").checked,
+        body.units.map((u) => ({ name: u.name, type: u.type, adopted: u.rates?.adopted ?? entered[u.name] ?? null })),
+      );
+      // A lookup returns only what the county lists, so "none listed".
+      $("message").textContent = !r
+        ? "Enter the value as a number of dollars."
+        : !r.school_units.length
+          ? "This parcel's tax records list no school district."
+          : "";
+      $("table").hidden = !r || !r.school_units.length;
+      $("total").textContent = r?.savings ? money(r.savings) : "enter the school district's rate";
+      $("rows").replaceChildren(
+        ...(r?.school_units ?? []).map((s) => {
+          const cells = [
+            s.name,
+            s.rate ?? "no adopted rate yet",
+            money(String(s.exemption)),
+            s.savings ? money(s.savings) : "enter its rate",
+          ];
+          const row = document.createElement("tr");
+          for (const c of cells) {
+            const td = document.createElement("td");
+            td.textContent = c;
+            row.append(td);
+          }
+          return row;
+        }),
+      );
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Texas property tax proration at closing</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 56rem; margin: 2rem auto; padding: 0 1rem; }
+    input { font: inherit; padding: 0.4rem; }
+    label { display: block; margin-top: 0.75rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { text-align: left; padding: 0.4rem; border-bottom: 1px solid #ccc; }
+    .note { color: #555; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Texas property tax proration at closing</h1>
+
+  <!-- 1. The address: one lookup through our own server, which holds the key. -->
+  <form id="ask">
+    <label for="address">Texas street address</label>
+    <input id="address" size="40" required />
+    <button>Look up</button>
+  </form>
+  <p id="status" role="status"></p>
+
+  <!-- 2. The value, the annual tax, the closing date and the paid box: recomputed in the browser, no second lookup. -->
+  <section id="result" hidden>
+    <p><strong id="where"></strong></p>
+    <label for="value">Value ($)</label>
+    <input id="value" inputmode="decimal" placeholder="Enter the value" />
+    <p class="note" id="value-note"></p>
+    <p>Estimated annual tax: <strong id="estimate"></strong> <span id="left-out"></span></p>
+    <label for="annual">Annual tax ($), to override the estimate</label>
+    <input id="annual" inputmode="decimal" placeholder="From the tax statement" />
+    <label for="closing">Closing date</label>
+    <input id="closing" type="date" />
+    <label><input type="checkbox" id="paid" /> This year's taxes are already paid</label>
+    <p id="message"></p>
+    <table id="table" hidden>
+      <tbody>
+        <tr><th>Seller's days</th><td id="days"></td></tr>
+        <tr><th>Seller's share</th><td id="seller"></td></tr>
+        <tr><th>Buyer's share</th><td id="buyer"></td></tr>
+      </tbody>
+      <tfoot><tr><th id="credit-to"></th><td><strong id="credit"></strong></td></tr></tfoot>
+    </table>
+    <p class="note">
+      Prorated through the closing date (TREC form 20-19, paragraph 13); the contract adjusts it once the year's
+      statements are out. A PID's assessment is not a tax and is not in the estimate.
+    </p>
+    <p class="note" id="request-id"></p>
+  </section>
+
+  <script type="module">
+    import { annualTax, prorate } from "./calc.js";
+
+    const $ = (id) => document.getElementById(id);
+    const money = (s) => "$" + Number(s).toLocaleString("en-US", { minimumFractionDigits: 2 });
+    const clean = (s) => s.replace(/[$,\s]/g, "");
+    let body = null; // the last API answer; every recompute reads it
+
+    $("ask").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("status").textContent = "Looking up…";
+      const res = await fetch("/lookup?address=" + encodeURIComponent($("address").value));
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.units) {
+        // An error answer carries { error: { code, message } }; an ambiguous address lists candidates.
+        $("status").textContent = json.error?.message ?? `The lookup was not answered (${res.status}).`;
+        $("result").hidden = true;
+        return;
+      }
+      body = json;
+      $("status").textContent = "";
+      $("where").textContent = `${json.address?.normalized ?? json.address?.input ?? ""}, ${json.county?.name} County`;
+      // parcel.value is the appraisal district's value (kind "market" or "assessed"), not a sale price: editable.
+      const v = json.parcel?.value;
+      $("value").value = v?.amount ?? "";
+      $("annual").value = "";
+      $("value-note").textContent = v
+        ? `Prefilled with the appraisal district's ${v.kind} value for ${v.tax_year}. Change it to your price.`
+        : "The county gives no value for this parcel. Enter the value.";
+      $("request-id").textContent = `Request id: ${res.headers.get("x-request-id") ?? "none"}`;
+      $("result").hidden = false;
+      render();
+    });
+
+    for (const id of ["value", "annual", "closing"]) $(id).addEventListener("input", render);
+    $("paid").addEventListener("change", render);
+
+    function render() {
+      // A PID (levy "assessment") is not a tax: leave it out of the annual tax.
+      const est = annualTax(
+        clean($("value").value),
+        body.units.filter((u) => u.levy !== "assessment").map((u) => ({ name: u.name, adopted: u.rates?.adopted ?? null })),
+      );
+      $("estimate").textContent = est ? money(est.total) : "enter the value";
+      $("left-out").textContent = est?.left_out.length
+        ? `(leaves out ${est.left_out.length} unit(s) with no adopted rate yet: ${est.left_out.join(", ")}, so it is low; type the annual tax below)`
+        : "";
+      const tax = clean($("annual").value) || est?.total;
+      const r = tax && $("closing").value ? prorate(tax, $("closing").value, $("paid").checked) : null;
+      $("message").textContent = r ? "" : !$("closing").value ? "Enter the closing date." : "Enter the annual tax as a number of dollars.";
+      $("table").hidden = !r;
+      if (!r) return;
+      $("days").textContent = `${r.seller_days} of ${r.days_in_year}`;
+      $("seller").textContent = money(r.seller_share);
+      $("buyer").textContent = money(r.buyer_share);
+      $("credit-to").textContent = r.credit.to === "buyer" ? "Seller credits buyer" : "Buyer credits seller";
+      $("credit").textContent = money(r.credit.amount);
+    }
+  </script>
+</body>
+</html>

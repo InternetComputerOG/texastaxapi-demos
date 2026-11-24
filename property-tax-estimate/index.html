@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Texas property tax estimate</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 52rem; margin: 2rem auto; padding: 0 1rem; }
+    input { font: inherit; padding: 0.4rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { text-align: left; padding: 0.4rem; border-bottom: 1px solid #ccc; }
+    .note { color: #555; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Texas property tax estimate</h1>
+
+  <!-- 1. The address: one lookup through our own server, which holds the key. -->
+  <form id="ask">
+    <label for="address">Texas street address</label><br />
+    <input id="address" size="40" required />
+    <button>Look up</button>
+  </form>
+  <p id="status" role="status"></p>
+
+  <!-- 2. The value and the result: recomputed in the browser, with no second lookup. -->
+  <section id="result" hidden>
+    <p><strong id="where"></strong></p>
+    <label for="value">Value ($)</label>
+    <input id="value" inputmode="decimal" placeholder="Enter the value" />
+    <p class="note" id="value-note"></p>
+    <table>
+      <thead><tr><th>Taxing unit</th><th>Type</th><th>Rate per $100</th><th>Tax</th><th>Share</th></tr></thead>
+      <tbody id="rows"></tbody>
+      <tfoot><tr><th colspan="3">Total</th><th id="total" colspan="2"></th></tr></tfoot>
+    </table>
+    <p id="left-out"></p>
+    <p id="pids"></p>
+    <p class="note" id="request-id"></p>
+  </section>
+
+  <script type="module">
+    import { estimate } from "./calc.js";
+
+    const $ = (id) => document.getElementById(id);
+    const money = (s) => "$" + Number(s).toLocaleString("en-US", { minimumFractionDigits: 2 });
+    let body = null; // the last API answer; every recompute reads it
+    const typed = {}; // rates the reader typed for units with no adopted rate, by index
+
+    $("ask").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("status").textContent = "Looking up…";
+      const res = await fetch("/lookup?address=" + encodeURIComponent($("address").value));
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.units) {
+        // An error answer carries { error: { code, message } }; an ambiguous address lists candidates.
+        $("status").textContent = json.error?.message ?? `The lookup was not answered (${res.status}).`;
+        $("result").hidden = true;
+        return;
+      }
+      body = json;
+      for (const k in typed) delete typed[k];
+      $("status").textContent = "";
+      $("where").textContent = `${json.address?.normalized ?? json.address?.input ?? ""}, ${json.county?.name} County`;
+      // parcel.value is the appraisal district's value (kind "market" or "assessed"), not a sale price: editable.
+      const v = json.parcel?.value;
+      $("value").value = v?.amount ?? "";
+      $("value-note").textContent = v
+        ? `Prefilled with the appraisal district's ${v.kind} value for ${v.tax_year}. Change it to your price.`
+        : "The county gives no value for this parcel. Enter the value.";
+      $("request-id").textContent = `Request id: ${res.headers.get("x-request-id") ?? "none"}`;
+      $("result").hidden = false;
+      render();
+    });
+
+    $("value").addEventListener("input", render);
+
+    function render() {
+      // A PID levies an assessment, not a tax: listed apart, never summed.
+      const taxes = body.units.filter((u) => u.levy !== "assessment");
+      const pids = body.units.filter((u) => u.levy === "assessment");
+      const r = estimate(
+        $("value").value.replace(/[$,\s]/g, ""),
+        taxes.map((u, i) => ({ name: u.name, type: u.type, adopted: u.rates?.adopted ?? (typed[i]?.trim() || null) })),
+      );
+      $("rows").replaceChildren(
+        ...taxes.map((u, i) => {
+          const row = document.createElement("tr");
+          const t = r?.units[i]?.tax;
+          const cells = [u.name, u.type, null, t ? money(t) : "—",
+            t && Number(r.total) > 0 ? ((Number(t) / Number(r.total)) * 100).toFixed(1) + "%" : "—"];
+          for (const c of cells) {
+            const td = document.createElement("td");
+            if (c === null && u.rates?.adopted) td.textContent = u.rates.adopted;
+            else if (c === null) {
+              // No adopted rate yet: say so, and let the reader type one.
+              td.textContent = "no adopted rate yet ";
+              const input = document.createElement("input");
+              input.size = 8;
+              input.placeholder = "type a rate";
+              input.setAttribute("aria-label", `Rate for ${u.name}`);
+              input.value = typed[i] ?? "";
+              input.addEventListener("change", () => { typed[i] = input.value; render(); });
+              td.append(input);
+            } else td.textContent = c;
+            row.append(td);
+          }
+          return row;
+        }),
+      );
+      $("total").textContent = r ? money(r.total) + " a year" : "Enter the value as a number of dollars.";
+      $("left-out").textContent = r?.left_out.length
+        ? `The total leaves out ${r.left_out.length} unit(s): ${r.left_out.join(", ")}.`
+        : "";
+      $("pids").textContent = pids
+        .map((p) => `${p.name} is a PID: it levies an assessment, not a tax, so it is not in the total.`)
+        .join(" ");
+    }
+  </script>
+</body>
+</html>
