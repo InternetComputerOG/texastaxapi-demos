@@ -1,0 +1,196 @@
+{
+  "slug": "mortgage-escrow",
+  "formula": "P&I = L*r/(1-(1+r)^-n), L = price*(1-down), r = annual rate/12, n = years*12; tax = the property-tax-estimate total at value = price (no exemptions); monthly = P&I + tax/12 + insurance/12 + HOA; each output rounded half up to cents at the end",
+  "rates_source": "local wrangler dev site-lane answers, 2026-11-24, tax_year 2026 (work/research/demos/discovery.md, AS3)",
+  "examples": [
+    {
+      "name": "Fort Bend $400,000, 20% down, 6.5%, 30 years",
+      "input": {
+        "price": 400000,
+        "down_pct": 20,
+        "rate_pct": 6.5,
+        "years": 30,
+        "insurance_annual": 2400,
+        "hoa_monthly": 0,
+        "units": [
+          {
+            "name": "FORT BEND CO DRNG",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.010000"
+          },
+          {
+            "name": "FORT BEND CO GEN FUND",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.407000"
+          },
+          {
+            "name": "CINCO MUD 12",
+            "type": "mud",
+            "levy": "tax",
+            "adopted": "0.195000"
+          },
+          {
+            "name": "FORT BEND ESD 2",
+            "type": "esd",
+            "levy": "tax",
+            "adopted": "0.096778"
+          },
+          {
+            "name": "KATY ISD",
+            "type": "school",
+            "levy": "tax",
+            "adopted": "1.117100"
+          },
+          {
+            "name": "WILLOW-FORK DRNG",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.145000"
+          }
+        ]
+      },
+      "expected": {
+        "loan": 320000,
+        "principal_interest": 2022.62,
+        "tax_annual": "7883.51",
+        "tax_monthly": 656.96,
+        "insurance_monthly": 200,
+        "hoa_monthly": 0,
+        "total_monthly": 2879.58,
+        "left_out": []
+      }
+    },
+    {
+      "name": "Brazoria $285,500, 3.5% down, 6.25%, 30 years, $45 HOA",
+      "input": {
+        "price": 285500,
+        "down_pct": 3.5,
+        "rate_pct": 6.25,
+        "years": 30,
+        "insurance_annual": 3000,
+        "hoa_monthly": 45,
+        "units": [
+          {
+            "name": "ALVIN COLLEGE",
+            "type": "college",
+            "levy": "tax",
+            "adopted": "0.156543"
+          },
+          {
+            "name": "ALVIN INDEPENDENT SCHOOL DISTRICT",
+            "type": "school",
+            "levy": "tax",
+            "adopted": "1.124900"
+          },
+          {
+            "name": "BRAZORIA CENTRAL APPRAISAL DISTRICT",
+            "type": "other",
+            "levy": "tax",
+            "adopted": null
+          },
+          {
+            "name": "BRAZORIA COUNTY",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.262690"
+          },
+          {
+            "name": "BRAZORIA COUNTY DRAINAGE DISTRICT #4 (PEARLAND)",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.111267"
+          },
+          {
+            "name": "CITY OF PEARLAND",
+            "type": "city",
+            "levy": "tax",
+            "adopted": "0.627892"
+          },
+          {
+            "name": "PEARLAND MUNICIPAL MANAGEMENT DIST #2",
+            "type": "mmd",
+            "levy": "tax",
+            "adopted": "0.076150"
+          },
+          {
+            "name": "ROAD & BRIDGE FUND",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.042068"
+          }
+        ]
+      },
+      "expected": {
+        "loan": 275507.5,
+        "principal_interest": 1696.35,
+        "tax_annual": "6856.31",
+        "tax_monthly": 571.36,
+        "insurance_monthly": 250,
+        "hoa_monthly": 45,
+        "total_monthly": 2562.71,
+        "left_out": ["BRAZORIA CENTRAL APPRAISAL DISTRICT"]
+      }
+    },
+    {
+      "name": "Travis $350,000, 10% down, 7%, 15 years (Manor ISD left out)",
+      "input": {
+        "price": 350000,
+        "down_pct": 10,
+        "rate_pct": 7,
+        "years": 15,
+        "insurance_annual": 2100,
+        "hoa_monthly": 60,
+        "units": [
+          {
+            "name": "TRAVIS COUNTY",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.386210"
+          },
+          {
+            "name": "COTTONWD CREEK MUD NO 1",
+            "type": "mud",
+            "levy": "tax",
+            "adopted": "0.806500"
+          },
+          {
+            "name": "TRAVIS COUNTY HEALTHCARE DISTR",
+            "type": "hospital",
+            "levy": "tax",
+            "adopted": "0.132863"
+          },
+          {
+            "name": "MANOR ISD",
+            "type": "school",
+            "levy": "tax",
+            "adopted": null
+          },
+          {
+            "name": "AUSTIN COMM COLL DIST",
+            "type": "college",
+            "levy": "tax",
+            "adopted": "0.103643"
+          },
+          {
+            "name": "TRAVIS CO ESD NO 12",
+            "type": "esd",
+            "levy": "tax",
+            "adopted": "0.100000"
+          }
+        ]
+      },
+      "expected": {
+        "loan": 315000,
+        "principal_interest": 2831.31,
+        "tax_annual": "5352.26",
+        "tax_monthly": 446.02,
+        "insurance_monthly": 175,
+        "hoa_monthly": 60,
+        "total_monthly": 3512.33,
+        "left_out": ["MANOR ISD"]
+      }
+    }
+  ]
+}

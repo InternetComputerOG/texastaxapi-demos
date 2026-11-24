@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Texas mortgage payment with the address's real tax</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 56rem; margin: 2rem auto; padding: 0 1rem; }
+    input { font: inherit; padding: 0.4rem; }
+    label { display: block; margin-top: 0.75rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { text-align: left; padding: 0.4rem; border-bottom: 1px solid #ccc; }
+    .note { color: #555; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Texas mortgage payment with the address's real tax</h1>
+
+  <!-- 1. The address: one lookup through our own server, which holds the key. -->
+  <form id="ask">
+    <label for="address">Texas street address</label>
+    <input id="address" size="40" required />
+    <button>Look up</button>
+  </form>
+  <p id="status" role="status"></p>
+
+  <!-- 2. The price and the loan: recomputed in the browser, no second lookup. -->
+  <section id="result" hidden>
+    <p><strong id="where"></strong></p>
+    <label for="price">Price ($)</label>
+    <input id="price" inputmode="decimal" placeholder="Enter the price" />
+    <p class="note" id="price-note"></p>
+    <label for="down">Down payment (percent of the price)</label>
+    <input id="down" inputmode="decimal" value="20" />
+    <label for="rate">Interest rate (percent a year)</label>
+    <input id="rate" inputmode="decimal" value="6.5" />
+    <label for="years">Term (years)</label>
+    <input id="years" inputmode="numeric" value="30" />
+    <label for="insurance">Homeowner's insurance ($ a year)</label>
+    <input id="insurance" inputmode="decimal" value="2400" />
+    <label for="hoa">HOA ($ a month)</label>
+    <input id="hoa" inputmode="decimal" value="0" />
+    <p id="message"></p>
+    <table id="table" hidden>
+      <tbody>
+        <tr><th>Loan</th><td id="loan"></td></tr>
+        <tr><th>Principal and interest</th><td id="pi"></td></tr>
+        <tr><th>Property tax escrow</th><td><span id="tax"></span> <span class="note" id="left-out"></span></td></tr>
+        <tr><th>Insurance</th><td id="ins"></td></tr>
+        <tr><th>HOA</th><td id="hoa-m"></td></tr>
+      </tbody>
+      <tfoot><tr><th>Monthly payment</th><td><strong id="total"></strong></td></tr></tfoot>
+    </table>
+    <p class="note">
+      The tax is at the price with no exemptions (a seller's homestead does not transfer). A PID's assessment is not
+      a tax and is not in it. Mortgage insurance (PMI) is not computed.
+    </p>
+    <p class="note" id="request-id"></p>
+  </section>
+
+  <script type="module">
+    import { monthly } from "./calc.js";
+
+    const $ = (id) => document.getElementById(id);
+    const money = (n) => "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const clean = (s) => s.replace(/[$,%\s]/g, "");
+    let body = null; // the last API answer; every recompute reads it
+
+    $("ask").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("status").textContent = "Looking up…";
+      const res = await fetch("/lookup?address=" + encodeURIComponent($("address").value));
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.units) {
+        // An error answer carries { error: { code, message } }; an ambiguous address lists candidates.
+        $("status").textContent = json.error?.message ?? `The lookup was not answered (${res.status}).`;
+        $("result").hidden = true;
+        return;
+      }
+      body = json;
+      $("status").textContent = "";
+      $("where").textContent = `${json.address?.normalized ?? json.address?.input ?? ""}, ${json.county?.name} County`;
+      // parcel.value is the appraisal district's value, not a sale price: a sale resets it toward the price.
+      const v = json.parcel?.value;
+      $("price").value = v?.amount ?? "";
+      $("price-note").textContent = v
+        ? `Prefilled with the appraisal district's ${v.kind} value for ${v.tax_year}. Change it to your price.`
+        : "The county gives no value for this parcel. Enter the price.";
+      $("request-id").textContent = `Request id: ${res.headers.get("x-request-id") ?? "none"}`;
+      $("result").hidden = false;
+      render();
+    });
+
+    for (const id of ["price", "down", "rate", "years", "insurance", "hoa"]) $(id).addEventListener("input", render);
+
+    function render() {
+      // A PID (levy "assessment") is not a tax: leave it out of the escrow.
+      const units = body.units
+        .filter((u) => u.levy !== "assessment")
+        .map((u) => ({ name: u.name, adopted: u.rates?.adopted ?? null }));
+      const r = clean($("price").value)
+        ? monthly(
+            {
+              price: clean($("price").value), down_pct: clean($("down").value), rate_pct: clean($("rate").value),
+              years: clean($("years").value), insurance_annual: clean($("insurance").value), hoa_monthly: clean($("hoa").value),
+            },
+            units,
+          )
+        : null;
+      $("message").textContent = r ? "" : !clean($("price").value) ? "Enter the price."
+        : "Enter each figure as a number: the down payment at most 100 percent, the term at least one year.";
+      $("table").hidden = !r;
+      if (!r) return;
+      $("loan").textContent = money(r.loan);
+      $("pi").textContent = money(r.principal_interest);
+      $("tax").textContent = `${money(r.tax_monthly)} (${money(r.tax_annual)} a year)`;
+      $("left-out").textContent = r.left_out.length
+        ? `Leaves out ${r.left_out.length} unit(s) with no adopted rate yet: ${r.left_out.join(", ")}, so it is low.`
+        : "";
+      $("ins").textContent = money(r.insurance_monthly);
+      $("hoa-m").textContent = money(r.hoa_monthly);
+      $("total").textContent = money(r.total_monthly);
+    }
+  </script>
+</body>
+</html>
