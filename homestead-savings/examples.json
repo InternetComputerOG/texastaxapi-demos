@@ -1,0 +1,247 @@
+{
+  "slug": "homestead-savings",
+  "formula": "school exemption = min(value, 140000, plus 60000 if 65+ or disabled) (Tax Code 11.13(b), (c)); savings = round_half_up(exemption * school adopted rate / 100, cents); local-option exemptions (11.13(n)) are not in the answer and are not computed",
+  "rates_source": "local wrangler dev site-lane answers, 2026-11-24, tax_year 2026 (work/research/demos/discovery.md, AS3)",
+  "examples": [
+    {
+      "name": "Fort Bend, Katy ISD, $400,000",
+      "input": {
+        "value": 400000,
+        "over65_or_disabled": false,
+        "units": [
+          {
+            "name": "FORT BEND CO DRNG",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.010000"
+          },
+          {
+            "name": "FORT BEND CO GEN FUND",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.407000"
+          },
+          {
+            "name": "CINCO MUD 12",
+            "type": "mud",
+            "levy": "tax",
+            "adopted": "0.195000"
+          },
+          {
+            "name": "FORT BEND ESD 2",
+            "type": "esd",
+            "levy": "tax",
+            "adopted": "0.096778"
+          },
+          {
+            "name": "KATY ISD",
+            "type": "school",
+            "levy": "tax",
+            "adopted": "1.117100"
+          },
+          {
+            "name": "WILLOW-FORK DRNG",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.145000"
+          }
+        ]
+      },
+      "expected": {
+        "school_units": [
+          {
+            "name": "KATY ISD",
+            "rate": "1.117100",
+            "exemption": 140000,
+            "savings": "1563.94"
+          }
+        ],
+        "savings": "1563.94",
+        "not_computed": []
+      }
+    },
+    {
+      "name": "Fort Bend, Katy ISD, $400,000, 65 or older",
+      "input": {
+        "value": 400000,
+        "over65_or_disabled": true,
+        "units": [
+          {
+            "name": "FORT BEND CO DRNG",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.010000"
+          },
+          {
+            "name": "FORT BEND CO GEN FUND",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.407000"
+          },
+          {
+            "name": "CINCO MUD 12",
+            "type": "mud",
+            "levy": "tax",
+            "adopted": "0.195000"
+          },
+          {
+            "name": "FORT BEND ESD 2",
+            "type": "esd",
+            "levy": "tax",
+            "adopted": "0.096778"
+          },
+          {
+            "name": "KATY ISD",
+            "type": "school",
+            "levy": "tax",
+            "adopted": "1.117100"
+          },
+          {
+            "name": "WILLOW-FORK DRNG",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.145000"
+          }
+        ]
+      },
+      "expected": {
+        "school_units": [
+          {
+            "name": "KATY ISD",
+            "rate": "1.117100",
+            "exemption": 200000,
+            "savings": "2234.20"
+          }
+        ],
+        "savings": "2234.20",
+        "not_computed": []
+      }
+    },
+    {
+      "name": "Brazoria, Alvin ISD, $120,000 (exemption capped at the value)",
+      "input": {
+        "value": 120000,
+        "over65_or_disabled": false,
+        "units": [
+          {
+            "name": "ALVIN COLLEGE",
+            "type": "college",
+            "levy": "tax",
+            "adopted": "0.156543"
+          },
+          {
+            "name": "ALVIN INDEPENDENT SCHOOL DISTRICT",
+            "type": "school",
+            "levy": "tax",
+            "adopted": "1.124900"
+          },
+          {
+            "name": "BRAZORIA CENTRAL APPRAISAL DISTRICT",
+            "type": "other",
+            "levy": "tax",
+            "adopted": null
+          },
+          {
+            "name": "BRAZORIA COUNTY",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.262690"
+          },
+          {
+            "name": "BRAZORIA COUNTY DRAINAGE DISTRICT #4 (PEARLAND)",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.111267"
+          },
+          {
+            "name": "CITY OF PEARLAND",
+            "type": "city",
+            "levy": "tax",
+            "adopted": "0.627892"
+          },
+          {
+            "name": "PEARLAND MUNICIPAL MANAGEMENT DIST #2",
+            "type": "mmd",
+            "levy": "tax",
+            "adopted": "0.076150"
+          },
+          {
+            "name": "ROAD & BRIDGE FUND",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.042068"
+          }
+        ]
+      },
+      "expected": {
+        "school_units": [
+          {
+            "name": "ALVIN INDEPENDENT SCHOOL DISTRICT",
+            "rate": "1.124900",
+            "exemption": 120000,
+            "savings": "1349.88"
+          }
+        ],
+        "savings": "1349.88",
+        "not_computed": []
+      }
+    },
+    {
+      "name": "Travis, Manor ISD has no adopted rate",
+      "input": {
+        "value": 350000,
+        "over65_or_disabled": false,
+        "units": [
+          {
+            "name": "TRAVIS COUNTY",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.386210"
+          },
+          {
+            "name": "COTTONWD CREEK MUD NO 1",
+            "type": "mud",
+            "levy": "tax",
+            "adopted": "0.806500"
+          },
+          {
+            "name": "TRAVIS COUNTY HEALTHCARE DISTR",
+            "type": "hospital",
+            "levy": "tax",
+            "adopted": "0.132863"
+          },
+          {
+            "name": "MANOR ISD",
+            "type": "school",
+            "levy": "tax",
+            "adopted": null
+          },
+          {
+            "name": "AUSTIN COMM COLL DIST",
+            "type": "college",
+            "levy": "tax",
+            "adopted": "0.103643"
+          },
+          {
+            "name": "TRAVIS CO ESD NO 12",
+            "type": "esd",
+            "levy": "tax",
+            "adopted": "0.100000"
+          }
+        ]
+      },
+      "expected": {
+        "school_units": [
+          {
+            "name": "MANOR ISD",
+            "rate": null,
+            "exemption": 140000,
+            "savings": null
+          }
+        ],
+        "savings": null,
+        "not_computed": ["MANOR ISD"]
+      }
+    }
+  ]
+}
