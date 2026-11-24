@@ -1,0 +1,200 @@
+{
+  "slug": "special-district-check",
+  "formula": "for each MUD, UD, WD, WCID, FWSD, LID (Water Code ch. 49 notice), PID (Property Code 5.014 notice) and ESD (no purchaser notice): tax = round_half_up(value * adopted_rate / 100, cents); share = tax / total (4 places)",
+  "rates_source": "local wrangler dev site-lane answers, 2026-11-24, tax_year 2026 (work/research/demos/discovery.md, AS3)",
+  "examples": [
+    {
+      "name": "Fort Bend, $400,000: a MUD and an ESD",
+      "input": {
+        "value": 400000,
+        "units": [
+          {
+            "name": "FORT BEND CO DRNG",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.010000"
+          },
+          {
+            "name": "FORT BEND CO GEN FUND",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.407000"
+          },
+          {
+            "name": "CINCO MUD 12",
+            "type": "mud",
+            "levy": "tax",
+            "adopted": "0.195000"
+          },
+          {
+            "name": "FORT BEND ESD 2",
+            "type": "esd",
+            "levy": "tax",
+            "adopted": "0.096778"
+          },
+          {
+            "name": "KATY ISD",
+            "type": "school",
+            "levy": "tax",
+            "adopted": "1.117100"
+          },
+          {
+            "name": "WILLOW-FORK DRNG",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.145000"
+          }
+        ]
+      },
+      "expected": {
+        "districts": [
+          {
+            "name": "CINCO MUD 12",
+            "type": "mud",
+            "rate": "0.195000",
+            "tax": "780.00",
+            "share_of_total": "0.0989",
+            "notice": "Water Code 49.452"
+          },
+          {
+            "name": "FORT BEND ESD 2",
+            "type": "esd",
+            "rate": "0.096778",
+            "tax": "387.11",
+            "share_of_total": "0.0491",
+            "notice": null
+          }
+        ],
+        "total": "7883.51",
+        "any_notice": true
+      }
+    },
+    {
+      "name": "Travis, Manor, $350,000: a MUD and an ESD",
+      "input": {
+        "value": 350000,
+        "units": [
+          {
+            "name": "TRAVIS COUNTY",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.386210"
+          },
+          {
+            "name": "COTTONWD CREEK MUD NO 1",
+            "type": "mud",
+            "levy": "tax",
+            "adopted": "0.806500"
+          },
+          {
+            "name": "TRAVIS COUNTY HEALTHCARE DISTR",
+            "type": "hospital",
+            "levy": "tax",
+            "adopted": "0.132863"
+          },
+          {
+            "name": "MANOR ISD",
+            "type": "school",
+            "levy": "tax",
+            "adopted": null
+          },
+          {
+            "name": "AUSTIN COMM COLL DIST",
+            "type": "college",
+            "levy": "tax",
+            "adopted": "0.103643"
+          },
+          {
+            "name": "TRAVIS CO ESD NO 12",
+            "type": "esd",
+            "levy": "tax",
+            "adopted": "0.100000"
+          }
+        ]
+      },
+      "expected": {
+        "districts": [
+          {
+            "name": "COTTONWD CREEK MUD NO 1",
+            "type": "mud",
+            "rate": "0.806500",
+            "tax": "2822.75",
+            "share_of_total": "0.5274",
+            "notice": "Water Code 49.452"
+          },
+          {
+            "name": "TRAVIS CO ESD NO 12",
+            "type": "esd",
+            "rate": "0.100000",
+            "tax": "350.00",
+            "share_of_total": "0.0654",
+            "notice": null
+          }
+        ],
+        "total": "5352.26",
+        "any_notice": true
+      }
+    },
+    {
+      "name": "Brazoria, Pearland, $285,500: no special district needing a notice",
+      "input": {
+        "value": 285500,
+        "units": [
+          {
+            "name": "ALVIN COLLEGE",
+            "type": "college",
+            "levy": "tax",
+            "adopted": "0.156543"
+          },
+          {
+            "name": "ALVIN INDEPENDENT SCHOOL DISTRICT",
+            "type": "school",
+            "levy": "tax",
+            "adopted": "1.124900"
+          },
+          {
+            "name": "BRAZORIA CENTRAL APPRAISAL DISTRICT",
+            "type": "other",
+            "levy": "tax",
+            "adopted": null
+          },
+          {
+            "name": "BRAZORIA COUNTY",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.262690"
+          },
+          {
+            "name": "BRAZORIA COUNTY DRAINAGE DISTRICT #4 (PEARLAND)",
+            "type": "drainage",
+            "levy": "tax",
+            "adopted": "0.111267"
+          },
+          {
+            "name": "CITY OF PEARLAND",
+            "type": "city",
+            "levy": "tax",
+            "adopted": "0.627892"
+          },
+          {
+            "name": "PEARLAND MUNICIPAL MANAGEMENT DIST #2",
+            "type": "mmd",
+            "levy": "tax",
+            "adopted": "0.076150"
+          },
+          {
+            "name": "ROAD & BRIDGE FUND",
+            "type": "other",
+            "levy": "tax",
+            "adopted": "0.042068"
+          }
+        ]
+      },
+      "expected": {
+        "districts": [],
+        "total": "6856.31",
+        "any_notice": false
+      }
+    }
+  ]
+}
