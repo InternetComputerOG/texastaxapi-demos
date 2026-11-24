@@ -56,4 +56,4 @@ createServer(async (req, res) => {
     res.writeHead(502, { "content-type": "application/json" });
     res.end(JSON.stringify({ error: { code: "upstream", message: "The API could not be reached." } }));
   }
-}).listen(PORT, () => console.log(`Special district check:http://localhost:${PORT}`));
+}).listen(PORT, () => console.log(`Special district check: http://localhost:${PORT}`));
