@@ -32,11 +32,12 @@ Copying the folder into your own project? Run `node --env-file=.env server.js` b
 
 ## Build your own
 
-The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with the key in
-`.env`.
+The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with your key in
+`TEXASTAXAPI_KEY` (`TEXASTAXAPI_API_URL` defaults to `https://api.texastaxapi.com`; the repo's
+`.env.example` names both).
 
 ```text
-Build a one-page Texas property tax calculator. A small Node server (no dependencies) takes an address, calls GET https://api.texastaxapi.com/v1/lookup?address=… with my key from .env (header Authorization: Bearer <key>), and returns the JSON. The page lists each taxing unit with its type and adopted rate (units[].rates.adopted, per $100 of value). It computes each unit's tax as value × rate / 100, rounded half up to the cent, and the total as the sum of the rounded units. It prefills the value from parcel.value and lets me change it, recomputing without another request. It lists a unit with no adopted rate as left out of the total, with a field to type a rate, and lists a unit whose levy is "assessment" (a PID) apart, never summed as a tax.
+Build a one-page Texas property tax calculator. A small Node server (no dependencies) takes an address, calls GET {TEXASTAXAPI_API_URL}/v1/lookup?address=… with my key from TEXASTAXAPI_KEY (header Authorization: Bearer <key>), and returns the JSON. Read both from the environment, as the repo's .env.example names them; TEXASTAXAPI_API_URL defaults to https://api.texastaxapi.com. The page reads only parcel.value.amount, county.name and each unit's name, type, levy, rates.adopted and estimated_tax.adopted. The page lists each taxing unit with its type and adopted rate (units[].rates.adopted, per $100 of value). It computes each unit's tax as value × rate / 100, rounded half up to the cent, and the total as the sum of the rounded units. It prefills the value from parcel.value and lets me change it, recomputing without another request. It lists a unit with no adopted rate as left out of the total, with a field to type a rate, and lists a unit whose levy is "assessment" (a PID) apart, never summed as a tax.
 ```
 
 ## The calls it makes

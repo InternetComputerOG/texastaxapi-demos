@@ -33,11 +33,12 @@ Copying the folder into your own project? Run `node --env-file=.env server.js` b
 
 ## Build your own
 
-The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with the key in
-`.env`.
+The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with your key in
+`TEXASTAXAPI_KEY` (`TEXASTAXAPI_API_URL` defaults to `https://api.texastaxapi.com`; the repo's
+`.env.example` names both).
 
 ```text
-Build a Texas mortgage payment calculator with real escrow. A small Node server (no dependencies) takes an address, calls GET https://api.texastaxapi.com/v1/lookup?address=… with my key from .env (header Authorization: Bearer <key>), and returns the JSON. The tax is the sum over the units with rates.adopted (per $100 of value) of the purchase price × rate / 100, each rounded half up to the cent, with no exemptions; a PID is an assessment, not a tax. Let me enter the price, the down payment and the rate in percent, the term in years, insurance a year and HOA a month. Loan = price × (1 − down / 100); r = rate / 100 / 12; n = years × 12; P&I = loan × r / (1 − (1 + r)^−n), or loan / n at a zero rate. Monthly = P&I + tax / 12 + insurance / 12 + HOA, rounded half up to the cent. Prefill the price from parcel.value. Recompute on every input change, without another request. If a unit has no adopted rate, name it beside the escrow line. Do not compute PMI; say so.
+Build a Texas mortgage payment calculator with real escrow. A small Node server (no dependencies) takes an address, calls GET {TEXASTAXAPI_API_URL}/v1/lookup?address=… with my key from TEXASTAXAPI_KEY (header Authorization: Bearer <key>), and returns the JSON. Read both from the environment, as the repo's .env.example names them; TEXASTAXAPI_API_URL defaults to https://api.texastaxapi.com. The page reads only parcel.value.amount and each unit's name, levy and rates.adopted. The tax is the sum over the units with rates.adopted (per $100 of value) of the purchase price × rate / 100, each rounded half up to the cent, with no exemptions; a PID is an assessment, not a tax. Let me enter the price, the down payment and the rate in percent, the term in years, insurance a year and HOA a month. Loan = price × (1 − down / 100); r = rate / 100 / 12; n = years × 12; P&I = loan × r / (1 − (1 + r)^−n), or loan / n at a zero rate. Monthly = P&I + tax / 12 + insurance / 12 + HOA, rounded half up to the cent. Prefill the price from parcel.value. Recompute on every input change, without another request. If a unit has no adopted rate, name it beside the escrow line. Do not compute PMI; say so.
 ```
 
 ## The calls it makes

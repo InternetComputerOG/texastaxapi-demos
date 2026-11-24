@@ -37,11 +37,12 @@ Copying the folder into your own project? Run `node --env-file=.env server.js` b
 
 ## Build your own
 
-The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with the key in
-`.env`.
+The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with your key in
+`TEXASTAXAPI_KEY` (`TEXASTAXAPI_API_URL` defaults to `https://api.texastaxapi.com`; the repo's
+`.env.example` names both).
 
 ```text
-Build a page that checks a Texas address for special districts. A small Node server (no dependencies) takes an address, calls GET https://api.texastaxapi.com/v1/lookup?address=… with my key from .env (header Authorization: Bearer <key>), and returns the JSON. Filter units to the types mud, ud, wd, wcid, fwsd, lid, pid and esd. For each, show its adopted rate (rates.adopted, per $100 of value), its tax at an editable value prefilled from parcel.value (value × rate / 100, rounded half up to the cent) and its share of the total tax over every unit, recomputing without another request. Flag the water districts as carrying the Water Code 49.452 notice to purchaser and a PID the Property Code 5.014 notice; an ESD carries no purchaser notice. A unit whose levy is "assessment" (a PID) is never summed as a tax. When nothing matches, say "this parcel's tax records list no MUD, PID or ESD", never that a notice is not required.
+Build a page that checks a Texas address for special districts. A small Node server (no dependencies) takes an address, calls GET {TEXASTAXAPI_API_URL}/v1/lookup?address=… with my key from TEXASTAXAPI_KEY (header Authorization: Bearer <key>), and returns the JSON. Read both from the environment, as the repo's .env.example names them; TEXASTAXAPI_API_URL defaults to https://api.texastaxapi.com. The page reads only parcel.value.amount, county.name and each unit's name, type, levy, rates.adopted and estimated_tax.adopted. Filter units to the types mud, ud, wd, wcid, fwsd, lid, pid and esd. For each, show its adopted rate (rates.adopted, per $100 of value), its tax at an editable value prefilled from parcel.value (value × rate / 100, rounded half up to the cent) and its share of the total tax over every unit, recomputing without another request. Flag the water districts as carrying the Water Code 49.452 notice to purchaser and a PID the Property Code 5.014 notice; an ESD carries no purchaser notice. A unit whose levy is "assessment" (a PID) is never summed as a tax. When nothing matches, say "this parcel's tax records list no MUD, PID or ESD", never that a notice is not required.
 ```
 
 ## The calls it makes

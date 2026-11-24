@@ -32,11 +32,12 @@ Copying the folder into your own project? Run `node --env-file=.env server.js` b
 
 ## Build your own
 
-The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with the key in
-`.env`.
+The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with your key in
+`TEXASTAXAPI_KEY` (`TEXASTAXAPI_API_URL` defaults to `https://api.texastaxapi.com`; the repo's
+`.env.example` names both).
 
 ```text
-Build a Texas closing tax proration calculator. A small Node server (no dependencies) takes an address, calls GET https://api.texastaxapi.com/v1/lookup?address=… with my key from .env (header Authorization: Bearer <key>), and returns the JSON. Estimate the annual tax as the sum over the units with rates.adopted (per $100 of value) of value × rate / 100, each rounded half up to the cent; a PID is an assessment, not a tax. Prefill the value from parcel.value and let me edit it, or type the annual tax myself to override the estimate. Prorate through the closing date: seller days = 1 January through the closing date inclusive, over 365 or 366; seller share = annual × seller days / days in the year, rounded half up; the buyer's share is the rest. If the taxes are unpaid, the seller credits the buyer the seller share; if paid, the buyer credits the seller the buyer share. Recompute as I change the value, the annual tax, the date or the paid box, without another request. If a unit has no adopted rate, say the estimate leaves it out.
+Build a Texas closing tax proration calculator. A small Node server (no dependencies) takes an address, calls GET {TEXASTAXAPI_API_URL}/v1/lookup?address=… with my key from TEXASTAXAPI_KEY (header Authorization: Bearer <key>), and returns the JSON. Read both from the environment, as the repo's .env.example names them; TEXASTAXAPI_API_URL defaults to https://api.texastaxapi.com. The page reads only parcel.value.amount and each unit's name, levy and rates.adopted. Estimate the annual tax as the sum over the units with rates.adopted (per $100 of value) of value × rate / 100, each rounded half up to the cent; a PID is an assessment, not a tax. Prefill the value from parcel.value and let me edit it, or type the annual tax myself to override the estimate. Prorate through the closing date: seller days = 1 January through the closing date inclusive, over 365 or 366; seller share = annual × seller days / days in the year, rounded half up; the buyer's share is the rest. If the taxes are unpaid, the seller credits the buyer the seller share; if paid, the buyer credits the seller the buyer share. Recompute as I change the value, the annual tax, the date or the paid box, without another request. If a unit has no adopted rate, say the estimate leaves it out.
 ```
 
 ## The calls it makes

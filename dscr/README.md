@@ -33,11 +33,12 @@ Copying the folder into your own project? Run `node --env-file=.env server.js` b
 
 ## Build your own
 
-The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with the key in
-`.env`.
+The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with your key in
+`TEXASTAXAPI_KEY` (`TEXASTAXAPI_API_URL` defaults to `https://api.texastaxapi.com`; the repo's
+`.env.example` names both).
 
 ```text
-Build a DSCR calculator for Texas rentals. A small Node server (no dependencies) takes an address, calls GET https://api.texastaxapi.com/v1/lookup?address=… with my key from .env (header Authorization: Bearer <key>), and returns the JSON. The tax is the sum over the units with rates.adopted (per $100 of value) of the purchase price × rate / 100, each rounded half up to the cent, with no exemptions; a PID is an assessment, not a tax. Let me enter the monthly rent, the price, the down payment and the rate in percent, the term in years, insurance a year and HOA a month. Loan = price × (1 − down / 100); r = rate / 100 / 12; n = years × 12; P&I = loan × r / (1 − (1 + r)^−n), or loan / n at a zero rate. PITIA = P&I + tax / 12 + insurance / 12 + HOA, rounded half up to the cent. DSCR = rent / PITIA to 2 places; show whether it is 1.25 or above, 1.00 to 1.24, or below 1.00, in a sentence with the numbers, and say it is not a lender's decision. Prefill the price from parcel.value. Recompute on every input change, without another request. If a unit has no adopted rate, name it and say the ratio is high.
+Build a DSCR calculator for Texas rentals. A small Node server (no dependencies) takes an address, calls GET {TEXASTAXAPI_API_URL}/v1/lookup?address=… with my key from TEXASTAXAPI_KEY (header Authorization: Bearer <key>), and returns the JSON. Read both from the environment, as the repo's .env.example names them; TEXASTAXAPI_API_URL defaults to https://api.texastaxapi.com. The page reads only parcel.value.amount and each unit's name, levy and rates.adopted. The tax is the sum over the units with rates.adopted (per $100 of value) of the purchase price × rate / 100, each rounded half up to the cent, with no exemptions; a PID is an assessment, not a tax. Let me enter the monthly rent, the price, the down payment and the rate in percent, the term in years, insurance a year and HOA a month. Loan = price × (1 − down / 100); r = rate / 100 / 12; n = years × 12; P&I = loan × r / (1 − (1 + r)^−n), or loan / n at a zero rate. PITIA = P&I + tax / 12 + insurance / 12 + HOA, rounded half up to the cent. DSCR = rent / PITIA to 2 places; show whether it is 1.25 or above, 1.00 to 1.24, or below 1.00, in a sentence with the numbers, and say it is not a lender's decision. Prefill the price from parcel.value. Recompute on every input change, without another request. If a unit has no adopted rate, name it and say the ratio is high.
 ```
 
 ## The calls it makes

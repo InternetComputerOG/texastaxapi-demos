@@ -36,11 +36,12 @@ Copying the folder into your own project? Run `node --env-file=.env server.js` b
 
 ## Build your own
 
-The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with the key in
-`.env`.
+The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with your key in
+`TEXASTAXAPI_KEY` (`TEXASTAXAPI_API_URL` defaults to `https://api.texastaxapi.com`; the repo's
+`.env.example` names both).
 
 ```text
-Build a Texas homestead savings calculator. A small Node server (no dependencies) takes an address, calls GET https://api.texastaxapi.com/v1/lookup?address=… with my key from .env (header Authorization: Bearer <key>), and returns the JSON. Find the units whose type is school. For each with rates.adopted (per $100 of value), compute the savings as min(value, 140000, plus 60000 if the owner is 65 or older or disabled) × rate / 100, rounded half up to the cent. Prefill the value from parcel.value and let me edit it and a 65-or-older-or-disabled checkbox, recomputing without another request. If a school unit has no adopted rate, ask me for its rate instead of guessing. Say that local-option exemptions and a MUD's own homestead exemption are not computed.
+Build a Texas homestead savings calculator. A small Node server (no dependencies) takes an address, calls GET {TEXASTAXAPI_API_URL}/v1/lookup?address=… with my key from TEXASTAXAPI_KEY (header Authorization: Bearer <key>), and returns the JSON. Read both from the environment, as the repo's .env.example names them; TEXASTAXAPI_API_URL defaults to https://api.texastaxapi.com. The page reads only parcel.value.amount and each unit's name, type and rates.adopted. Find the units whose type is school. For each with rates.adopted (per $100 of value), compute the savings as min(value, 140000, or 200000 if the owner is 65 or older or disabled) × rate / 100, rounded half up to the cent. Prefill the value from parcel.value and let me edit it and a 65-or-older-or-disabled checkbox, recomputing without another request. If a school unit has no adopted rate, ask me for its rate instead of guessing. Say that local-option exemptions and a MUD's own homestead exemption are not computed.
 ```
 
 ## The calls it makes
