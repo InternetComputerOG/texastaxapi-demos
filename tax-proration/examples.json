@@ -1,0 +1,61 @@
+{
+  "slug": "tax-proration",
+  "formula": "seller days = Jan 1 through the closing date, inclusive (TREC 20-19 para 13, \"prorated through the Closing Date\"); seller share = round_half_up(annual * seller_days / days_in_year, cents); unpaid taxes: seller credits buyer the seller share; paid: buyer credits seller the rest",
+  "rates_source": "local wrangler dev site-lane answers, 2026-11-24, tax_year 2026 (work/research/demos/discovery.md, AS3)",
+  "examples": [
+    {
+      "name": "Fort Bend $400,000 estimate, closing 2026-06-30, taxes unpaid",
+      "input": {
+        "annual_tax": "7883.51",
+        "closing_date": "2026-06-30",
+        "taxes_paid": false
+      },
+      "expected": {
+        "days_in_year": 365,
+        "seller_days": 181,
+        "seller_share": "3909.36",
+        "buyer_share": "3974.15",
+        "credit": {
+          "to": "buyer",
+          "amount": "3909.36"
+        }
+      }
+    },
+    {
+      "name": "Same, closing 2026-12-15, taxes already paid",
+      "input": {
+        "annual_tax": "7883.51",
+        "closing_date": "2026-12-15",
+        "taxes_paid": true
+      },
+      "expected": {
+        "days_in_year": 365,
+        "seller_days": 349,
+        "seller_share": "7537.93",
+        "buyer_share": "345.58",
+        "credit": {
+          "to": "seller",
+          "amount": "345.58"
+        }
+      }
+    },
+    {
+      "name": "Leap year, $6,000.00, closing 2028-03-01, unpaid",
+      "input": {
+        "annual_tax": "6000.00",
+        "closing_date": "2028-03-01",
+        "taxes_paid": false
+      },
+      "expected": {
+        "days_in_year": 366,
+        "seller_days": 61,
+        "seller_share": "1000.00",
+        "buyer_share": "5000.00",
+        "credit": {
+          "to": "buyer",
+          "amount": "1000.00"
+        }
+      }
+    }
+  ]
+}

@@ -32,7 +32,7 @@ Each folder is self-contained: copy one into your own project and it runs.
 | `property-tax-estimate` | Each taxing unit's adopted rate and tax for a Texas address, and the total | [property-tax-estimate](property-tax-estimate/) | [texastaxapi.com/demos/property-tax-estimate](https://texastaxapi.com/demos/property-tax-estimate) |
 | `special-district-check` | Whether a Texas address sits in a MUD, PID or ESD, what each levies, and the purchaser notice it carries | [special-district-check](special-district-check/) | [texastaxapi.com/demos/special-district-check](https://texastaxapi.com/demos/special-district-check) |
 | `homestead-savings` | What the school homestead exemption saves at a Texas address, with the 65+ amount | [homestead-savings](homestead-savings/) | [texastaxapi.com/demos/homestead-savings](https://texastaxapi.com/demos/homestead-savings) |
-| `tax-proration` | coming | — | — |
+| `tax-proration` | The year's property tax at a Texas address split between seller and buyer at closing, and who credits whom | [tax-proration](tax-proration/) | [texastaxapi.com/demos/tax-proration](https://texastaxapi.com/demos/tax-proration) |
 | `mortgage-escrow` | coming | — | — |
 | `dscr` | coming | — | — |
 

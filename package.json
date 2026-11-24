@@ -9,6 +9,7 @@
     "test": "node --test",
     "property-tax-estimate": "node --env-file=.env property-tax-estimate/server.js",
     "special-district-check": "node --env-file=.env special-district-check/server.js",
-    "homestead-savings": "node --env-file=.env homestead-savings/server.js"
+    "homestead-savings": "node --env-file=.env homestead-savings/server.js",
+    "tax-proration": "node --env-file=.env tax-proration/server.js"
   }
 }
