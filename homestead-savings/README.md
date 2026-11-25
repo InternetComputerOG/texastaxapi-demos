@@ -36,12 +36,25 @@ Copying the folder into your own project? Run `node --env-file=.env server.js` b
 
 ## Build your own
 
-The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with your key in
-`TEXASTAXAPI_KEY` (`TEXASTAXAPI_API_URL` defaults to `https://api.texastaxapi.com`; the repo's
-`.env.example` names both).
+Paste this prompt into a coding agent in an empty folder, or open it in one from [its page](https://texastaxapi.com/demos/homestead-savings).
+The agent reads this README and the docs, builds your own copy, and walks you through the few steps only you can
+do, getting a free key among them.
 
 ```text
-Build a Texas homestead savings calculator. A small Node server (no dependencies) takes an address, calls GET {TEXASTAXAPI_API_URL}/v1/lookup?address=… with my key from TEXASTAXAPI_KEY (header Authorization: Bearer <key>), and returns the JSON. Read both from the environment, as the repo's .env.example names them; TEXASTAXAPI_API_URL defaults to https://api.texastaxapi.com. The page reads only parcel.value.amount and each unit's name, type and rates.adopted. Find the units whose type is school. For each with rates.adopted (per $100 of value), compute the savings as min(value, 140000, or 200000 if the owner is 65 or older or disabled) × rate / 100, rounded half up to the cent. Prefill the value from parcel.value and let me edit it and a 65-or-older-or-disabled checkbox, recomputing without another request. If a school unit has no adopted rate, ask me for its rate instead of guessing. Say that local-option exemptions and a MUD's own homestead exemption are not computed.
+Set up my own copy of the texastaxapi.com demo "Texas homestead exemption savings by address" (https://texastaxapi.com/demos/homestead-savings) in this folder, and walk me through the steps only I can do.
+
+For the details, read these before you write anything:
+- https://raw.githubusercontent.com/InternetComputerOG/texastaxapi-demos/main/homestead-savings/README.md: the formula, its sources, the fields it reads and the one API call. The demo's code is in that folder; you may start from it.
+- https://texastaxapi.com/llms.txt: the API docs for agents, and the Markdown pages it links.
+
+Build what the README describes and nothing more: a small Node server with no dependencies that serves one page and keeps the key on the server. It reads TEXASTAXAPI_KEY and TEXASTAXAPI_API_URL from a .env file (run it with node --env-file=.env); TEXASTAXAPI_API_URL defaults to https://api.texastaxapi.com. If .env exists, keep its values. If not, create it with an empty TEXASTAXAPI_KEY and that default URL.
+
+Then walk me through, one short step at a time:
+1. If TEXASTAXAPI_KEY is empty: get a free key at https://texastaxapi.com/account/login (sign in with your email; your account page shows the key) and paste it after TEXASTAXAPI_KEY= in .env. Never ask me to paste the key into this chat.
+2. Give me the exact command that starts the server.
+3. Open the address it prints and look up 13252 George Bush St, Manor, TX 78653.
+
+If you cannot create files or run commands here, give me the files and these steps to do on my computer instead.
 ```
 
 ## The calls it makes

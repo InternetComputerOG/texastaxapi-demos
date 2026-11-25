@@ -84,8 +84,8 @@
       if (!r) $("none").textContent = "Enter the value as a number of dollars.";
       $("rows").replaceChildren(
         ...(r?.districts ?? []).map((d) => {
-          // A PID's amount, when the county prints it, is its estimated_tax; otherwise it comes from the city or county.
-          const pidAmount = body.units.find((u) => u.name === d.name)?.estimated_tax?.adopted;
+          // A PID's amount, when the county prints it, is its assessment.annual; otherwise it comes from the city or county.
+          const pidAmount = body.units.find((u) => u.name === d.name)?.assessment?.annual;
           const cells = [
             d.name,
             d.type.toUpperCase(),

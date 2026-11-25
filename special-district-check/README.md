@@ -37,12 +37,25 @@ Copying the folder into your own project? Run `node --env-file=.env server.js` b
 
 ## Build your own
 
-The prompt that builds this demo from nothing: paste it into a coding agent in an empty folder, with your key in
-`TEXASTAXAPI_KEY` (`TEXASTAXAPI_API_URL` defaults to `https://api.texastaxapi.com`; the repo's
-`.env.example` names both).
+Paste this prompt into a coding agent in an empty folder, or open it in one from [its page](https://texastaxapi.com/demos/special-district-check).
+The agent reads this README and the docs, builds your own copy, and walks you through the few steps only you can
+do, getting a free key among them.
 
 ```text
-Build a page that checks a Texas address for special districts. A small Node server (no dependencies) takes an address, calls GET {TEXASTAXAPI_API_URL}/v1/lookup?address=… with my key from TEXASTAXAPI_KEY (header Authorization: Bearer <key>), and returns the JSON. Read both from the environment, as the repo's .env.example names them; TEXASTAXAPI_API_URL defaults to https://api.texastaxapi.com. The page reads only parcel.value.amount, county.name and each unit's name, type, levy, rates.adopted and estimated_tax.adopted. Filter units to the types mud, ud, wd, wcid, fwsd, lid, pid and esd. For each, show its adopted rate (rates.adopted, per $100 of value), its tax at an editable value prefilled from parcel.value (value × rate / 100, rounded half up to the cent) and its share of the total tax over every unit, recomputing without another request. Flag the water districts as carrying the Water Code 49.452 notice to purchaser and a PID the Property Code 5.014 notice; an ESD carries no purchaser notice. A unit whose levy is "assessment" (a PID) is never summed as a tax. When nothing matches, say "this parcel's tax records list no MUD, PID or ESD", never that a notice is not required.
+Set up my own copy of the texastaxapi.com demo "MUD, PID and ESD check for a Texas address" (https://texastaxapi.com/demos/special-district-check) in this folder, and walk me through the steps only I can do.
+
+For the details, read these before you write anything:
+- https://raw.githubusercontent.com/InternetComputerOG/texastaxapi-demos/main/special-district-check/README.md: the formula, its sources, the fields it reads and the one API call. The demo's code is in that folder; you may start from it.
+- https://texastaxapi.com/llms.txt: the API docs for agents, and the Markdown pages it links.
+
+Build what the README describes and nothing more: a small Node server with no dependencies that serves one page and keeps the key on the server. It reads TEXASTAXAPI_KEY and TEXASTAXAPI_API_URL from a .env file (run it with node --env-file=.env); TEXASTAXAPI_API_URL defaults to https://api.texastaxapi.com. If .env exists, keep its values. If not, create it with an empty TEXASTAXAPI_KEY and that default URL.
+
+Then walk me through, one short step at a time:
+1. If TEXASTAXAPI_KEY is empty: get a free key at https://texastaxapi.com/account/login (sign in with your email; your account page shows the key) and paste it after TEXASTAXAPI_KEY= in .env. Never ask me to paste the key into this chat.
+2. Give me the exact command that starts the server.
+3. Open the address it prints and look up 13252 George Bush St, Manor, TX 78653.
+
+If you cannot create files or run commands here, give me the files and these steps to do on my computer instead.
 ```
 
 ## The calls it makes
@@ -50,6 +63,6 @@ Build a page that checks a Texas address for special districts. A small Node ser
 One call per address, from `server.js`:
 
 - `GET {TEXASTAXAPI_API_URL}/v1/lookup?address=<the address>`, header `Authorization: Bearer <TEXASTAXAPI_KEY>`.
-- Fields read: `units[].name`, `type`, `levy`, `rates.adopted`, `estimated_tax.adopted` (a PID's amount);
+- Fields read: `units[].name`, `type`, `levy`, `rates.adopted`, `assessment.annual` (a PID's amount);
   `parcel.value` (`kind`, `amount`, `tax_year`); `county.name`; `address.normalized`; the `X-Request-Id` header.
 - An error answer is `{ "error": { "code", "message" } }`; the page shows its message.
