@@ -63,6 +63,6 @@ If you cannot create files or run commands here, give me the files and these ste
 One call per address, from `server.js`:
 
 - `GET {TEXASTAXAPI_API_URL}/v1/lookup?address=<the address>`, header `Authorization: Bearer <TEXASTAXAPI_KEY>`.
-- Fields read: `units[].name`, `type`, `levy`, `rates.adopted`, `estimated_tax.adopted` (a PID's amount);
+- Fields read: `units[].name`, `type`, `levy`, `rates.adopted`, `assessment.annual` (a PID's amount);
   `parcel.value` (`kind`, `amount`, `tax_year`); `county.name`; `address.normalized`; the `X-Request-Id` header.
 - An error answer is `{ "error": { "code", "message" } }`; the page shows its message.
