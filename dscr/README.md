@@ -1,5 +1,12 @@
 # Texas DSCR calculator with the address's real tax
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="card-dark.svg">
+  <img src="card.svg" width="200" height="150" align="right" alt="">
+</picture>
+
+<p><a href="https://texastaxapi.com/demos/dscr"><b>Try it live</b></a> · <a href="#build-your-own">Build your own</a> · <a href="../">All demos</a></p>
+
 ## Who it is for
 
 Loan officers who quote investor loans on Texas rentals and need the debt service coverage ratio with the property's

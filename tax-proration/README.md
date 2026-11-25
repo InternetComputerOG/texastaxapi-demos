@@ -1,5 +1,12 @@
 # Texas property tax proration at closing
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="card-dark.svg">
+  <img src="card.svg" width="200" height="150" align="right" alt="">
+</picture>
+
+<p><a href="https://texastaxapi.com/demos/tax-proration"><b>Try it live</b></a> · <a href="#build-your-own">Build your own</a> · <a href="../">All demos</a></p>
+
 ## Who it is for
 
 Title companies and realtors who split a Texas address's property tax between seller and buyer at closing.

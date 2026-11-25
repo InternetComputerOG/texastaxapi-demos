@@ -1,5 +1,12 @@
 # MUD, PID and ESD check for a Texas address
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="card-dark.svg">
+  <img src="card.svg" width="200" height="150" align="right" alt="">
+</picture>
+
+<p><a href="https://texastaxapi.com/demos/special-district-check"><b>Try it live</b></a> · <a href="#build-your-own">Build your own</a> · <a href="../">All demos</a></p>
+
 ## Who it is for
 
 Realtors and title companies who need to know whether a Texas address sits in a special district, what each one
