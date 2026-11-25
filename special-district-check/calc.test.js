@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { check } from "./calc.js";
+import { check, pidAmount } from "./calc.js";
 
 const { examples } = JSON.parse(
   readFileSync(new URL("./examples.json", import.meta.url), "utf8"),
@@ -24,6 +24,16 @@ test("lists a PID with its notice and never sums it", () => {
   assert.deepEqual(r.districts, [
     { name: "PID 1", type: "pid", rate: null, tax: null, share_of_total: null, notice: "Property Code 5.014" },
   ]);
+});
+
+test("a PID's amount is its assessment.annual, else null", () => {
+  const units = [
+    { name: "PID 1", type: "pid", assessment: { annual: "412.50" } },
+    { name: "PID 2", type: "pid" },
+  ];
+  assert.equal(pidAmount("PID 1", units), "412.50");
+  assert.equal(pidAmount("PID 2", units), null);
+  assert.equal(pidAmount("PID 3", units), null);
 });
 
 test("refuses a value that is not an amount", () => {

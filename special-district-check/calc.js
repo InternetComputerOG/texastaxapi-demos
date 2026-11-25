@@ -77,3 +77,6 @@ export function check(value, units) {
   );
   return { districts, total: cents(total), any_notice: districts.some((d) => d.notice !== null) };
 }
+
+/** A PID's yearly amount, when the county prints it: the lookup unit's `assessment.annual`, else null. */
+export const pidAmount = (name, units) => units.find((u) => u.name === name)?.assessment?.annual ?? null;

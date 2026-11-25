@@ -39,7 +39,7 @@
   </section>
 
   <script type="module">
-    import { check } from "./calc.js";
+    import { check, pidAmount } from "./calc.js";
 
     const $ = (id) => document.getElementById(id);
     const money = (s) => "$" + Number(s).toLocaleString("en-US", { minimumFractionDigits: 2 });
@@ -85,12 +85,12 @@
       $("rows").replaceChildren(
         ...(r?.districts ?? []).map((d) => {
           // A PID's amount, when the county prints it, is its assessment.annual; otherwise it comes from the city or county.
-          const pidAmount = body.units.find((u) => u.name === d.name)?.assessment?.annual;
+          const pid = pidAmount(d.name, body.units);
           const cells = [
             d.name,
             d.type.toUpperCase(),
             d.rate ?? (d.type === "pid" ? "an assessment" : "no adopted rate yet"),
-            d.tax ? money(d.tax) : d.type === "pid" ? (pidAmount ? money(pidAmount) : "from the city or county") : "—",
+            d.tax ? money(d.tax) : d.type === "pid" ? (pid ? money(pid) : "from the city or county") : "—",
             d.share_of_total ? (Number(d.share_of_total) * 100).toFixed(2) + "%" : "—",
             d.notice ?? "none; its rate is capped at 10¢ per $100",
           ];
