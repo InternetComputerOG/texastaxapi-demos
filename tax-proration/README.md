@@ -32,20 +32,25 @@ Copying the folder into your own project? Run `node --env-file=.env server.js` b
 
 ## Build your own
 
-Paste this prompt into a coding agent in an empty folder, or open it in one from [its page](https://texastaxapi.com/demos/tax-proration).
-The agent reads this README and the docs, builds your own copy, and walks you through the few steps only you can
-do, getting a free key among them.
+Paste this prompt into an agent, or open it in one from [its page](https://texastaxapi.com/demos/tax-proration).
+The agent reads this README and the docs, builds your own copy in the form that fits where it runs (an artifact in a
+chat app with the texastaxapi.com connector, else what you choose), and walks you through the steps only you can do.
 
 ```text
-Set up my own copy of the texastaxapi.com demo "Texas property tax proration at closing" (https://texastaxapi.com/demos/tax-proration) in this folder, and walk me through the steps only I can do.
+Set up my own copy of the texastaxapi.com demo "Texas property tax proration at closing" (https://texastaxapi.com/demos/tax-proration), and walk me through the steps only I can do.
 
-For the details, read these before you write anything:
+For the details, read these before you build anything:
 - https://raw.githubusercontent.com/InternetComputerOG/texastaxapi-demos/main/tax-proration/README.md: the formula, its sources, the fields it reads and the one API call. The demo's code is in that folder; you may start from it.
 - https://texastaxapi.com/llms.txt: the API docs for agents, and the Markdown pages it links.
 
-Build what the README describes and nothing more: a small Node server with no dependencies that serves one page and keeps the key on the server. It reads TEXASTAXAPI_KEY and TEXASTAXAPI_API_URL from a .env file (run it with node --env-file=.env); TEXASTAXAPI_API_URL defaults to https://api.texastaxapi.com. If .env exists, keep its values. If not, create it with an empty TEXASTAXAPI_KEY and that default URL.
+Build what the README describes and nothing more, in the form that fits where you run:
+- In a chat app with the texastaxapi.com connector: look up 13252 George Bush St, Manor, TX 78653 with its tool and build an artifact seeded with that result.
+- In a chat app without it: tell me how to connect it (https://texastaxapi.com/docs/agents), or build from figures I give you.
+- Anywhere else: ask me how I want it built, suggesting the README's small Node server with no dependencies (run with node --env-file=.env).
 
-Then walk me through, one short step at a time:
+The key only ever lives on a server, in a .env file with TEXASTAXAPI_KEY and TEXASTAXAPI_API_URL (default https://api.texastaxapi.com), never in browser code or an artifact. If .env exists, keep its values; if not, create it with an empty TEXASTAXAPI_KEY and that default URL.
+
+For a server build, walk me through, one short step at a time:
 1. If TEXASTAXAPI_KEY is empty: get a free key at https://texastaxapi.com/account/login (sign in with your email; your account page shows the key) and paste it after TEXASTAXAPI_KEY= in .env. Never ask me to paste the key into this chat.
 2. Give me the exact command that starts the server.
 3. Open the address it prints and look up 13252 George Bush St, Manor, TX 78653.
